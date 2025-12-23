@@ -1,0 +1,432 @@
+:root {
+    --card-red: #c0392b;
+    /* Classic Deep Red */
+    --card-green: #27ae60;
+    /* Classic Green */
+    --gold: #f1c40f;
+    --paper: #fdfbf7;
+    /* Creamy paper */
+    --text-dark: #2c3e50;
+    --wood-bg: #5d4037;
+    /* Warm wood-like background */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--wood-bg);
+    background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+    /* Subtle texture */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Playfair Display', serif;
+    overflow: hidden;
+    perspective: 1500px;
+    /* Essential for 3D effect */
+}
+
+.snow-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.snowflake {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2em;
+}
+
+/* Scene Container */
+.scene {
+    width: 400px;
+    height: 600px;
+    position: relative;
+}
+
+/* The Card Wrapper */
+.card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transform-origin: left;
+    transition: transform 1s cubic-bezier(0.4, 0.2, 0.2, 1);
+    cursor: pointer;
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Open State - Rotates the whole card system slightly or just the front */
+.card.open {
+    transform: translateX(150px) rotateY(-180deg);
+}
+
+/* Common Card Face Styles */
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* FRONT FACE */
+.card-front {
+    background-color: var(--card-red);
+    color: var(--paper);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    transform: rotateY(0deg);
+    /* Default */
+    border: 2px solid #a93226;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    /* Polka dots */
+}
+
+.front-content {
+    border: 3px double var(--gold);
+    width: 85%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.card-front h1 {
+    font-family: 'Mountains of Christmas', cursive;
+    font-size: 3.5rem;
+    text-align: center;
+    margin: 20px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.tree-icon {
+    font-size: 4rem;
+    color: var(--card-green);
+    text-shadow: 0 0 5px var(--gold);
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.click-hint {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+}
+
+/* INSIDE LEFT (The back of the front cover) */
+.card-inside-left {
+    background-color: var(--paper);
+    transform: rotateY(180deg);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    /* Fold line shadow */
+    box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.inside-pattern {
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(45deg,
+            var(--card-red) 0px,
+            var(--card-red) 10px,
+            var(--paper) 10px,
+            var(--paper) 20px,
+            var(--card-green) 20px,
+            var(--card-green) 30px,
+            var(--paper) 30px,
+            var(--paper) 40px);
+    opacity: 0.1;
+}
+
+/* INSIDE RIGHT (The actual specific content) - Using pseudoelement or separate div? 
+   Wait, in a simple flip, the "Back" of the card-front is the Inside-Left.
+   But we need a stationary "Right" side that stays on the table.
+*/
+
+/* 
+   RE-THINKING STRUCTURE FOR "OPEN BOOK" EFFECT:
+   To have an open book effect:
+   - "Page 1 - Front": Rotates -180deg. Backface is "Inside Left".
+   - "Page 2 - Back": Stationary. Face is "Inside Right".
+   
+   Structure in HTML:
+   .scene
+     .card (wrapper) -> This will contain the 'moving' part?
+       No.
+       
+   Let's do:
+   .scene
+      .card-static-back (The right inside/back cover sitting on table)
+      .card-flipper (The front cover that flips)
+          .front (Visual Front)
+          .back (Visual Inside Left)
+*/
+
+/* Resetting styles for correct 3D open book */
+.card {
+    /* Reset from previous */
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    transform-origin: left center;
+    background: none;
+    box-shadow: none;
+}
+
+
+
+/* FIXING CSS STRUCTURE FOR FOLDED CARD */
+.scene {
+    perspective: 1500px;
+}
+
+.card {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+    cursor: pointer;
+}
+
+/* When open, we shift the whole container right so it stays centered visually */
+.card.open {
+    /* On wider screens, shift right to open like a book */
+    transform: translateX(200px);
+}
+
+/* The Front Cover Wrapper - This is what actually FLIPS */
+.card-front-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: left;
+    transition: transform 1s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    z-index: 2;
+}
+
+.card.open .card-front-cover {
+    transform: rotateY(-180deg);
+    box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for lifted page */
+}
+
+/* Faces */
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 4px;
+}
+
+/* 1. Actual Front Design */
+.front {
+    background-color: var(--card-red);
+    color: var(--paper);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #922b21;
+    /* Decoration */
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239e2e23' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* 2. Inside Left (Back of the Front Cover) */
+.back {
+    background-color: var(--paper);
+    transform: rotateY(180deg);
+    border-right: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.back::after {
+    content: '❄';
+    font-size: 5rem;
+    color: #e5e5e5;
+}
+
+/* 3. Inside Right (Stationary Back Panel) */
+.card-inside-right {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--paper);
+    z-index: 1;
+    /* Behind the cover */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    background-image: linear-gradient(#fdfbf7 2px, transparent 2px), linear-gradient(90deg, #fdfbf7 2px, transparent 2px), linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+}
+
+/* Typography & Content */
+h1 {
+    font-family: 'Mountains of Christmas', cursive;
+    font-size: 4rem;
+    line-height: 0.9;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 2px 0 #7b241c;
+}
+
+.message-content h2 {
+    color: var(--card-red);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.message-content h3 {
+    color: var(--text-dark);
+    font-family: 'Mountains of Christmas', cursive;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+.body-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.quote {
+    margin: 30px 0;
+    font-style: italic;
+    color: var(--card-green);
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.signature {
+    margin-top: 20px;
+    font-family: 'Great Vibes', cursive;
+    /* Fallback if not loaded, but script font */
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+.border-frame {
+    border: 3px double var(--gold);
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .scene {
+        perspective: none;
+        /* Disable 3D perspective to avoid distortion */
+        height: auto;
+        padding: 20px 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .card {
+        width: 90vw;
+        max-width: 340px;
+        height: 600px;
+        /* Taller for mobile to fit text */
+        margin: 0 auto;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* On mobile, we DO NOT shift the card. It stays centered. */
+    .card.open {
+        transform: none !important;
+        /* Keep centered, don't shift right */
+    }
+
+    /*
+       Restore the 3D opening effect as requested ("como estaba antes"),
+       but keeping the container centered so the text is in the middle.
+       The cover will flip to the left (potentially off-screen),
+       leaving the message perfectly centered.
+    */
+    .card.open .card-front-cover {
+        transform: rotateY(-180deg);
+        opacity: 1;
+        /* Visible again */
+        pointer-events: auto;
+    }
+
+    /* Ensure content fits and is centered */
+    .card-front h1 {
+        font-size: 3rem;
+    }
+
+    .message-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .message-content h2 {
+        font-size: 1.1rem;
+    }
+
+    .message-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .body-text {
+        font-size: 1rem;
+        /* Slightly larger for readability */
+        line-height: 1.5;
+        text-align: center;
+    }
+
+    .quote {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Adjust the back/inside design to be fully opaque and visible */
+    .card-inside-right {
+        border: 1px solid #ddd;
+    }
+}
