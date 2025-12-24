@@ -5,9 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', toggleCard);
 });
 
+let musicStarted = false;
+
 function toggleCard() {
     const card = document.querySelector('.card');
     card.classList.toggle('open');
+
+    const music = document.getElementById('bg-music');
+    if (music && !musicStarted) {
+        music.volume = 0.5; // Set volume to 50%
+        music.play().catch(e => console.log("Audio play failed (user interaction needed):", e));
+        musicStarted = true;
+    }
 }
 
 function createSnow() {
