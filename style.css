@@ -134,6 +134,15 @@ body {
     letter-spacing: 1px;
 }
 
+.sender-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 /* INSIDE LEFT (The back of the front cover) */
 .card-inside-left {
     background-color: var(--paper);
@@ -297,7 +306,7 @@ h1 {
     font-family: 'Mountains of Christmas', cursive;
     font-size: 4rem;
     line-height: 0.9;
-    margin-bottom: 2.5rem;
+    margin-bottom: 12rem;
     text-shadow: 0 2px 0 #7b241c;
 }
 
@@ -311,11 +320,19 @@ h1 {
     color: var(--text-dark);
     font-family: 'Mountains of Christmas', cursive;
     font-size: 1.8rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+}
+
+.card-logo {
+    width: 70px;
+    /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 5px;
+    display: block;
 }
 
 .body-text {
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.6;
     color: #555;
     margin-bottom: 1.5rem;
@@ -353,80 +370,140 @@ h1 {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    body {
+        /* Prevent horizontal scroll from the opened cover */
+        overflow-x: hidden;
+        width: 100vw;
+    }
+
     .scene {
-        perspective: none;
-        /* Disable 3D perspective to avoid distortion */
-        height: auto;
-        padding: 20px 0;
+        perspective: 1000px;
+        height: 100vh;
+        /* Fill screen */
         width: 100%;
         display: flex;
         justify-content: center;
+        align-items: center;
+        padding: 0;
+        /* Remove padding to maximize space */
     }
 
     .card {
-        width: 90vw;
-        max-width: 340px;
-        height: 600px;
-        /* Taller for mobile to fit text */
+        width: 95vw;
+        /* Maximize width */
+        max-width: 400px;
+        height: 85vh;
+        /* Maximize height safely */
+        max-height: 650px;
         margin: 0 auto;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.6s ease;
+        /* Smoother transition */
     }
 
-    /* On mobile, we DO NOT shift the card. It stays centered. */
+    /* Keep card centered when open */
     .card.open {
         transform: none !important;
-        /* Keep centered, don't shift right */
     }
 
-    /*
-       Restore the 3D opening effect as requested ("como estaba antes"),
-       but keeping the container centered so the text is in the middle.
-       The cover will flip to the left (potentially off-screen),
-       leaving the message perfectly centered.
+    /* 
+       On mobile, when open, we fade out the cover so the user
+       focuses entirely on the message without visual distractions (like the back of the cover).
     */
     .card.open .card-front-cover {
         transform: rotateY(-180deg);
-        opacity: 1;
-        /* Visible again */
-        pointer-events: auto;
+        opacity: 0;
+        /* Make it invisible */
+        pointer-events: none;
+        /* Interact with what's behind/under if needed */
+        transition: transform 0.8s, opacity 0.4s 0.2s;
+        /* Fade out halfway through flip */
     }
 
-    /* Ensure content fits and is centered */
+    .card-front-cover {
+        transition: transform 0.8s, opacity 0.4s;
+    }
+
+    /* Typography Tweaks for readability */
     .card-front h1 {
         font-size: 3rem;
     }
 
+    .border-frame h1 {
+        font-size: 3rem;
+    }
+
     .message-content {
-        padding: 20px;
+        padding: 30px 20px;
+        /* More padding for cleaner look */
         display: flex;
         flex-direction: column;
         justify-content: center;
+        /* Center vertically if space allows */
         align-items: center;
         height: 100%;
+        overflow-y: auto;
+        /* Scroll if needed */
+        -webkit-overflow-scrolling: touch;
     }
 
+    /* Ensure hierarchy */
     .message-content h2 {
         font-size: 1.1rem;
+        /* "Para: La Comunidad" */
+        margin-top: 0;
+        margin-bottom: 5px;
+        flex-shrink: 0;
     }
 
     .message-content h3 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        /* "La Casa Informática" */
+        margin-bottom: 20px;
+        flex-shrink: 0;
+        text-align: center;
+        line-height: 1.1;
     }
 
     .body-text {
         font-size: 1rem;
-        /* Slightly larger for readability */
-        line-height: 1.5;
+        line-height: 1.6;
         text-align: center;
+        /* Center align often looks more elegant on cards than justify */
+        margin-bottom: 1.2rem;
     }
 
     .quote {
         width: 100%;
         text-align: center;
+        font-size: 0.95rem;
+        margin-top: auto;
+        /* Push to bottom if flex spacing allows */
+        padding: 15px 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
     }
 
-    /* Adjust the back/inside design to be fully opaque and visible */
     .card-inside-right {
-        border: 1px solid #ddd;
+        border: none;
+        /* Cleaner look */
+        border-radius: 8px;
+        /* Softer corners */
+    }
+}
+
+/* Extra small screens adjustments */
+@media (max-width: 380px) {
+    .card-front h1 {
+        font-size: 2.5rem;
+    }
+
+    .body-text {
+        font-size: 0.9rem;
+    }
+
+    .message-content {
+        padding: 20px 15px;
     }
 }
